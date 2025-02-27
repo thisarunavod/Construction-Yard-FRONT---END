@@ -13,6 +13,7 @@ const api = Axios.create({
     baseURL: "http://localhost:3000",
 })
 
+
 export const loginUser = createAsyncThunk(
     'user/login',
     async (user:{username:string,password:string})=>{
@@ -28,6 +29,28 @@ export const loginUser = createAsyncThunk(
         }
     }
 )
+export const refreshToken = async () => {
+
+    try {
+        const refreshToken = localStorage.getItem("refreshToken");
+        if (!refreshToken) { throw new Error("Refresh token not found");}
+
+        // Send refreshToken in the Authorization header
+        const response = await api.post('/auth/refresh-token', {}, {
+            headers: {
+                Authorization: `Bearer ${refreshToken}`,
+            },
+        });
+
+        localStorage.setItem('accessToken', response.data.accessToken);
+        return response.data.accessToken;
+    } catch (err) {
+        console.error("Failed to refresh token:", err);
+        window.location.href = "/";
+
+    }
+};
+
 
 const userSlice = createSlice({
     name:'userReducer',

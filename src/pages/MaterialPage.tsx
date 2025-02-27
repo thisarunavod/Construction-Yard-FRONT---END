@@ -1,14 +1,18 @@
-import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../store/store.ts";
-import { addMaterial } from "../reducers/materialReducer.ts";
+import {useEffect, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import {AppDispatch, RootState} from "../store/store.ts";
+import materialReducer, {
+    addMaterial,
+    deleteMaterial,
+    getAllMaterials,
+    updateMaterial,
+} from "../reducers/materialReducer.ts";
 import Material from "../model/Material.ts";
 
 export function MaterialPage() {
-    const materials = [
-        // ... (your existing materials array)
-    ];
+    const materials = useSelector((state: RootState) => state.material);
 
+    const dispatch = useDispatch<AppDispatch>();
     const [materialId, setMaterialId] = useState('');
     const [materialName, setMaterialName] = useState('');
     const [type, setMaterialType] = useState('');
@@ -16,7 +20,16 @@ export function MaterialPage() {
     const [unit, setUnit] = useState('');
 
     const [isOpen, setIsOpen] = useState(false);
+    const [isUpdate, setIsUpdate] = useState(false);
     const [relevantMaterials, setRelevantMaterials] = useState(materials);
+
+    useEffect(() => {
+        setRelevantMaterials(materials);
+    }, [materials]);
+
+    useEffect(() => {
+        dispatch(getAllMaterials())
+    }, []);
 
     const [errors, setErrors] = useState({
         materialId: '',
@@ -26,18 +39,15 @@ export function MaterialPage() {
         unit: ''
     });
 
-    const dispatch = useDispatch<AppDispatch>();
-
     function filterMaterials(e) {
         const searchText = e.target.value.toLowerCase();
         const filtered = materials.filter((material) => {
             return (
-                material.id.toLowerCase().includes(searchText) ||
-                material.name.toLowerCase().includes(searchText) ||
+                material.material_id.toLowerCase().includes(searchText) ||
+                material.material_name.toLowerCase().includes(searchText) ||
                 material.type.toLowerCase().includes(searchText)
             );
         });
-
         setRelevantMaterials(filtered);
     }
 
@@ -96,6 +106,7 @@ export function MaterialPage() {
         };
 
         dispatch(addMaterial(material));
+
         setIsOpen(false); // Close the modal after adding the material
         resetForm(); // Reset the form fields
     }
@@ -115,9 +126,39 @@ export function MaterialPage() {
         });
     }
 
+
+    function configureUpdateProcess(material: Material) {
+        resetForm()
+        setIsUpdate(true)
+        setMaterialId(material.material_id)
+        setMaterialName(material.material_name)
+        setMaterialType(material.type)
+        setQtyAvailable(material.qty_available)
+        setUnit(material.unit)
+        setIsOpen(true)
+    }
+
     function handleInputChange(setter: (value: any) => void, field: string, value: any) {
         setter(value); // Update the state
         setErrors((prevErrors) => ({ ...prevErrors, [field]: '' })); // Clear the corresponding error
+    }
+
+    function handleUpdateMaterial(e: React.MouseEvent<HTMLButtonElement>) {
+        e.preventDefault();
+        if (!validateForm()) {
+            return;
+        }
+
+        const material: Material = {
+            material_id: materialId,
+            material_name: materialName,
+            type: type,
+            qty_available: qtyAvailable,
+            unit: unit,
+        };
+        console.log(material)
+        dispatch(updateMaterial(material))
+        setIsOpen(false)
     }
 
     return (
@@ -138,6 +179,7 @@ export function MaterialPage() {
                         className='bg-cyan-500 p-4 rounded-3xl text-white font-bold hover:scale-[1.05] transition-all duration-200 hover:bg-cyan-600'
                         onClick={() => {
                             setIsOpen(true)
+                            setIsUpdate(false)
                             resetForm();
                         }}>
                         Add Material
@@ -159,14 +201,24 @@ export function MaterialPage() {
                     <tbody>
                     {relevantMaterials.map((material, index) => (
                         <tr key={index}>
-                            <td className='text-center border border-gray-200 px-4 py-2'>{material.id}</td>
-                            <td className='text-center border border-gray-200 px-4 py-2'>{material.name}</td>
+                            <td className='text-center border border-gray-200 px-4 py-2'>{material.material_id}</td>
+                            <td className='text-center border border-gray-200 px-4 py-2'>{material.material_name}</td>
                             <td className='text-center border border-gray-200 px-4 py-2'>{material.type}</td>
-                            <td className='text-center border border-gray-200 px-4 py-2'>{material.qty}</td>
+                            <td className='text-center border border-gray-200 px-4 py-2'>{material.qty_available}</td>
                             <td className='text-center border border-gray-200 px-4 py-2'>{material.unit}</td>
                             <td className='flex flex-col gap-y-2 border border-gray-200 px-4 py-2'>
-                                <button className='bg-blue-500 p-1 rounded-xl text-white'>Edit</button>
-                                <button className='bg-red-500 p-1 rounded-xl text-white'>Delete</button>
+                                <button className='bg-blue-500 p-1 rounded-xl text-white'
+                                        onClick={()=> {
+                                            configureUpdateProcess(material)
+                                        }}
+                                >Edit</button>
+                                <button className='bg-red-500 p-1 rounded-xl text-white'
+                                    onClick={()=>{
+                                        if (window.confirm("Are you sure you want to delete this material?")) {
+                                            dispatch(deleteMaterial(material.material_id));
+                                        }
+                                    }}
+                                >Delete</button>
                             </td>
                         </tr>
                     ))}
@@ -178,7 +230,11 @@ export function MaterialPage() {
                      onClick={() => setIsOpen(false)}>
                     <form action="" className='bg-white flex flex-col w-1/2 gap-y-2 p-4 rounded-xl'
                           onClick={(e) => e.stopPropagation()}>
-                        <h1 className='text-xl text-gray-700 mb-4'>* ADD Material</h1>
+                        {isUpdate ?
+                            (<h1 className='text-xl text-gray-700 mb-4'>*Update Material</h1>)
+                            :(<h1 className='text-xl text-gray-700 mb-4'>*Add Material</h1>)
+                        }
+
                         <input
                             className='rounded-xl border p-3'
                             type="text"
@@ -235,12 +291,18 @@ export function MaterialPage() {
                         </select>
                         {errors.unit && <span className="text-red-500">{errors.unit}</span>}
                         <div className='flex flex-row justify-end gap-x-2.5 mt-5'>
-                            <button
-                                onClick={(e) => handleAddMaterial(e)}
-                                className='rounded-xl w-1/2 bg-blue-600 p-2 text-white'
-                            >
-                                Save
-                            </button>
+                            {!isUpdate && (
+                                <button
+                                    onClick={(e) => handleAddMaterial(e)}
+                                    className='rounded-xl w-1/2 bg-blue-600 p-2 text-white'
+                                >Save</button>
+                            )}
+                            {isUpdate && (
+                                <button
+                                    onClick={(e) => handleUpdateMaterial(e)}
+                                    className='rounded-xl w-1/2 bg-blue-600 p-2 text-white'
+                                >Update</button>
+                            )}
                             <button
                                 onClick={() => setIsOpen(false)}
                                 className='bg-red-500 w-1/2 outline-none rounded-xl p-2 text-white'

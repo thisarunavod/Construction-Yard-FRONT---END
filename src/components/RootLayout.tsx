@@ -1,6 +1,6 @@
 import React from "react";
 import {Outlet} from "react-router";
-import {TopMenuBar} from "./TopMenuBar.tsx";
+
 import {SideMenuBar} from "./SideMenuBar.tsx";
 
 export function RootLayout() {

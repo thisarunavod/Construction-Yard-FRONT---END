@@ -1,12 +1,14 @@
 import {configureStore} from "@reduxjs/toolkit";
 import userReducer from "../reducers/userReducer.ts";
 import materialReducer from "../reducers/materialReducer.ts";
+import supplierReducer from "../reducers/supplierReducer.ts";
 
 
 export const store = configureStore({
     reducer :{
         user : userReducer,
-        material: materialReducer
+        material: materialReducer,
+        supplier: supplierReducer,
     }
 })
 

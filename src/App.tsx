@@ -14,14 +14,11 @@ import {SuppliersPage} from "./pages/SuppliersPage.tsx";
 import {MaterialSendDetails} from "./pages/MaterialSendDetails.tsx";
 import {VehiclePage} from "./pages/VehiclePage.tsx";
 import {LoaderFunction} from "react-router-dom";
-import {useSelector} from "react-redux";
-import {RootState} from "./store/store.ts";
 
 
 function App() {
 
     const token = localStorage.getItem("accessToken");
-    // const securityTokens = useSelector((state: RootState) => state.user.securityTokens);
 
     const protectedLoader: LoaderFunction = () => {
         if (!token) {
@@ -29,6 +26,7 @@ function App() {
         }
         return null;
     };
+
     const routes = createBrowserRouter([
         {
             path:'/',
