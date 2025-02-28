@@ -1,63 +1,119 @@
-import {useState} from "react";
+import React, {useEffect, useState} from "react";
+import Material from "../model/Material.ts";
+import {useDispatch, useSelector} from "react-redux";
+import {AppDispatch, RootState} from "../store/store.ts";
+import {addProject, getALlProjects, loadALlProjectsMaterialRequirements} from "../reducers/projectReducer.ts";
+import MaterialRequirement from "../model/materialRequirement.ts";
+import Project from "../model/project.ts";
+import ProjectDetails from "../model/projectDetails.ts";
+import {requestFormReset} from "react-dom";
 
 export function ProjectPage() {
 
+
+    const dispatch = useDispatch<AppDispatch>();
+    const materials: Material[] = useSelector((state: RootState) => state.material);
+    const projectsDetails = useSelector((state:RootState) => state.project )
     const [isOpen, setIsOpen] = useState(false);
+    const [isUpdate, setIsUpdate] = useState(false);
+    const [relevantProjects , setRelevantProjects] =useState(projectsDetails.projects);
+    const[project_no,setProjectNo] = useState('');
+    const[project_name,setProjectName] = useState('');
+    const[location,setProjectLocation] = useState('');
+    const[start_date,setProjectStartDate] = useState('');
+    const[completion_date,setCompletionDate] = useState('');
+    const[materialRequirementList, setMaterialRequirementList] = useState<MaterialRequirement[]>([]);
+    const[relevantProjectMaterialReqirementList, setRelevantProjectMaterialReqirementList] =useState([]);
 
-    const projects = [
-        { project_no: "P001", project_name: "Matara Road", location: "Matara", start_date: "2024-03-08", completion_date: "2026-03-08" },
-        { project_no: "P002", project_name: "Colombo Bridge", location: "Colombo", start_date: "2023-11-15", completion_date: "2025-06-30" },
-        { project_no: "P003", project_name: "Kandy Housing", location: "Kandy", start_date: "2024-01-20", completion_date: "2025-12-20" },
-        { project_no: "P004", project_name: "Jaffna Hospital", location: "Jaffna", start_date: "2023-09-01", completion_date: "2026-09-01" },
-        { project_no: "P005", project_name: "Galle Port Expansion", location: "Galle", start_date: "2024-04-10", completion_date: "2027-04-10" },
-        { project_no: "P006", project_name: "Anuradhapura School", location: "Anuradhapura", start_date: "2023-12-05", completion_date: "2025-05-05" },
-        { project_no: "P007", project_name: "Trincomalee Resort", location: "Trincomalee", start_date: "2024-02-28", completion_date: "2026-08-28" },
-        { project_no: "P008", project_name: "Batticaloa Airport", location: "Batticaloa", start_date: "2023-10-22", completion_date: "2026-02-22" },
-        { project_no: "P009", project_name: "Kurunegala Dam", location: "Kurunegala", start_date: "2024-05-18", completion_date: "2027-11-18" },
-        { project_no: "P010", project_name: "Badulla Park", location: "Badulla", start_date: "2023-11-30", completion_date: "2025-04-30" },
-        { project_no: "P011", project_name: "Hambantota Stadium", location: "Hambantota", start_date: "2024-03-25", completion_date: "2026-10-25" },
-        { project_no: "P012", project_name: "Polonnaruwa Museum", location: "Polonnaruwa", start_date: "2023-09-15", completion_date: "2025-07-15" },
-        { project_no: "P013", project_name: "Kegalle Highway", location: "Kegalle", start_date: "2024-01-12", completion_date: "2027-01-12" },
-        { project_no: "P014", project_name: "Ratnapura Market", location: "Ratnapura", start_date: "2023-12-20", completion_date: "2026-06-20" },
-        { project_no: "P015", project_name: "Monaragala Farm", location: "Monaragala", start_date: "2024-04-05", completion_date: "2025-09-05" },
-        { project_no: "P016", project_name: "Ampara Power Plant", location: "Ampara", start_date: "2023-10-01", completion_date: "2028-03-01" },
-        { project_no: "P017", project_name: "Puttalam Wind Farm", location: "Puttalam", start_date: "2024-02-18", completion_date: "2026-12-18" },
-        { project_no: "P018", project_name: "Vavuniya Library", location: "Vavuniya", start_date: "2023-11-10", completion_date: "2025-08-10" },
-        { project_no: "P019", project_name: "Kalutara Beach Resort", location: "Kalutara", start_date: "2024-05-01", completion_date: "2027-05-01" },
-        { project_no: "P020", project_name: "Gampaha Railway", location: "Gampaha", start_date: "2023-09-25", completion_date: "2026-01-25" },
-    ];
-    const materials = [
-        { id: "M001", name: "River Sand", type: "SAND", qty: 25, unit: "Cube" },
-        { id: "M002", name: "Gravel", type: "AGGREGATE", qty: 50, unit: "Tons" },
-        { id: "M003", name: "Cement", type: "BINDER", qty: 100, unit: "Bags" },
-        { id: "M004", name: "Reinforcement Steel", type: "METAL", qty: 30, unit: "Tons" },
-        { id: "M005", name: "Bricks", type: "MASONRY", qty: 5000, unit: "Pieces" },
-        { id: "M006", name: "Timber Planks", type: "WOOD", qty: 150, unit: "Pieces" },
-        { id: "M007", name: "Concrete Blocks", type: "MASONRY", qty: 2000, unit: "Pieces" },
-        { id: "M008", name: "Asphalt", type: "PAVING", qty: 75, unit: "Tons" },
-        { id: "M009", name: "Ceramic Tiles", type: "FINISHING", qty: 800, unit: "Sq Ft" },
-        { id: "M010", name: "PVC Pipes", type: "PLUMBING", qty: 200, unit: "Meters" },
-        /*{ id: "M011", name: "Electrical Wires", type: "ELECTRICAL", qty: 300, unit: "Meters" },
-        { id: "M012", name: "Granite Slabs", type: "FINISHING", qty: 50, unit: "Pieces" },
-        { id: "M013", name: "Topsoil", type: "LANDSCAPING", qty: 40, unit: "Cube" },
-        { id: "M014", name: "Crushed Stone", type: "AGGREGATE", qty: 60, unit: "Tons" },
-        { id: "M015", name: "Plywood Sheets", type: "WOOD", qty: 100, unit: "Sheets" },
-        { id: "M016", name: "Roofing Tiles", type: "ROOFING", qty: 1200, unit: "Pieces" },
-        { id: "M017", name: "Insulation Material", type: "INSULATION", qty: 150, unit: "Rolls" },
-        { id: "M018", name: "Paint", type: "FINISHING", qty: 50, unit: "Liters" },
-        { id: "M019", name: "Nails", type: "FASTENERS", qty: 1000, unit: "Pieces" },
-        { id: "M020", name: "Bolts", type: "FASTENERS", qty: 800, unit: "Pieces" },
-        { id: "M021", name: "Window Frames", type: "WINDOWS", qty: 30, unit: "Pieces" },
-        { id: "M022", name: "Door Frames", type: "DOORS", qty: 25, unit: "Pieces" },*/
-    ];
 
-    const [relevantProjects , setRelevantProjects] =useState(projects);
+    useEffect(() => {
+        const requirements = materials.map((m)=>(
+            {
+                material_id:m.material_id,
+                required_qty:0,
+                issue_qty:0,
+                unit:m.unit,
+            }
+        ))
+        setMaterialRequirementList(requirements)
+    }, [materials]);
+
+    useEffect(() => {
+        dispatch(getALlProjects())
+        dispatch(loadALlProjectsMaterialRequirements())
+    }, []);
+
+    useEffect(()=>{
+        setRelevantProjects(projectsDetails.projects);
+    },[projectsDetails.projects]);
+
+
+    const[errors,setErrors] = useState({
+        project_no: '',
+        project_name: '',
+        location: '',
+        start_date: '',
+        completion_date: '',
+    });
+
+    function validateForm() {
+        let isValid = true;
+        const newErrors = {
+            project_no: '',
+            project_name: '',
+            location: '',
+            start_date: '',
+            completion_date: '',
+        };
+
+        if (!project_no){
+            newErrors.project_no = 'Project No is required';
+            isValid = false;
+        }
+
+        if (!project_name){
+            newErrors.project_name = 'Project Name is required';
+            isValid = false;
+        }
+        if (!location){
+            newErrors.location = 'Location is required';
+            isValid = false;
+        }
+        if (!start_date){
+            newErrors.start_date = 'Start Date is required';
+        }
+        if (!completion_date){
+            newErrors.completion_date = 'Completion Date is required';
+        }
+
+        setErrors(newErrors)
+        return isValid;
+
+    }
+
+    function resetForm() {
+        setProjectNo('');
+        setProjectName('');
+        setProjectLocation('');
+        setErrors({
+            project_no: '',
+            project_name: '',
+            location: '',
+            start_date: '',
+            completion_date: '',
+        });
+    }
+
+    function handleInputChange(setter: (value: any) => void, field: string, value: any) {
+        setter(value); // Update the state
+        setErrors((prevErrors) => ({ ...prevErrors, [field]: '' })); // Clear the corresponding error
+    }
 
     function filterProjects(e) {
         const searchText = e.target.value.toLowerCase();
 
         if (!searchText ) {
-            setRelevantProjects(projects); // Reset to original if search is empty
+            setRelevantProjects(projectsDetails.projects); // Reset to original if search is empty
             return;
         }
         const filteredProjects = relevantProjects.filter((project) => {
@@ -70,6 +126,71 @@ export function ProjectPage() {
         setRelevantProjects(filteredProjects);
 
     }
+
+    function handleUpdateProject(e: React.MouseEvent<HTMLButtonElement>) {
+        e.preventDefault()
+
+    }
+
+    function handleAddProject(e: React.MouseEvent<HTMLButtonElement>) {
+        e.preventDefault();
+        if (!validateForm()) { return}
+        console.log(materialRequirementList)
+
+        const projectDetails:ProjectDetails = {
+            project_no:project_no,
+            project_name:project_name,
+            location:location,
+            start_date:start_date,
+            completion_date:completion_date,
+            requirements:materialRequirementList,
+        }
+        console.log(projectDetails)
+        dispatch(addProject(projectDetails));
+        resetForm()
+        setIsOpen(false)
+    }
+
+    function setvaluesForRequirements(e: React.ChangeEvent<HTMLInputElement>,material:Material) {
+        setMaterialRequirementList((prevList)=> {
+                return prevList.map((requirement) =>
+                    requirement.material_id === material.material_id
+                        ? {...requirement, required_qty: Number(e.target.value)}
+                        : requirement
+                );
+            }
+        )
+    }
+
+    function configureUpdateProcess(project) {
+        resetForm();
+        const requirementList = projectsDetails.requirements.filter((requirement) => requirement.project_no === project.project_no);
+        setRelevantProjectMaterialReqirementList(
+            requirementList
+        )
+        console.log(relevantProjectMaterialReqirementList)
+
+        setIsUpdate(true);
+        setProjectNo(project.project_no)
+        setProjectName(project.project_name)
+        setProjectLocation(project.location)
+        setProjectStartDate(project.start_date.split('T')[0]);
+        setCompletionDate(project.completion_date.split('T')[0])
+        setIsOpen(true);
+    }
+
+
+    const handleRequirementChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+        const newValue = Number(e.target.value);
+        const updatedRequirements = relevantProjectMaterialReqirementList.map((requirement, i) => {
+            if (i === index) {
+                return { ...requirement,required_qty: newValue };
+            }
+            return requirement;
+        });
+
+        setRelevantProjectMaterialReqirementList(updatedRequirements);
+    };
 
     return (
         <div className="project">
@@ -88,27 +209,18 @@ export function ProjectPage() {
                     />
                     <button
                         className='bg-cyan-500 p-4 rounded-3xl text-white font-bold hover:scale-[1.05] transition-all duration-200 hover:bg-cyan-600'
-                        onClick={() => setIsOpen(true)}>
+                        onClick={() => {
+                            setIsOpen(true);
+                            setIsUpdate(false);
+                            resetForm();
+                            console.log(materialRequirementList)
+                        }}>
                         Add Project
                     </button>
                 </div>
             </div>
             <div className={'overflow-y-auto max-h-[calc(10990vh-100px)]'}> {/* Adjusted max-h */}
-                {/*{relevantProjects.map((project) => (
-                    <div key={project.project_no} className={'flex justify-center items-center'}>
-                        <div
-                            className="flex flex-col justify-start w-3/4 rounded-xl h-auto bg-sky-200 mt-5 gap-y-8 p-2 hover:bg-sky-300 transition-all duration-400 cursor-pointer">
-                            <span className='ml-20'>Project No: <span>{project.project_no}</span></span>
-                            <span className='ml-20'>Project Name: <span>{project.project_name}</span></span>
-                            <span className='ml-20'>Project Location: <span>{project.location}</span></span>
-                            <div className='flex flex-row justify-center items-center gap-8'>
-                                <button className='w-1/3 bg-blue-500 p-2 rounded text-white hover:bg-blue-600 transition-colors'>Edit Project Details</button>
-                                <button className='w-1/3 bg-green-500 p-2 rounded text-white hover:bg-green-600 transition-colors'>Show Project Details</button>
-                                <button className='w-1/3 bg-red-500 p-2 rounded text-white hover:bg-red-600 transition-colors'>Remove Project</button>
-                            </div>
-                        </div>
-                    </div>
-                ))}*/}
+
                 {relevantProjects.map((project) => (
                     <div key={project.project_no} className="flex justify-center items-center py-3"> {/* Added py-3 for vertical spacing */}
                         <div className="w-3/4 rounded-lg shadow-md bg-sky-50 p-6 transition-all duration-300 hover:bg-sky-200 hover:shadow-lg cursor-pointer"> {/* Improved styling */}
@@ -122,7 +234,9 @@ export function ProjectPage() {
                                 <span className="font-semibold text-gray-700">Project Location:</span> <span className="text-gray-600">{project.location}</span>
                             </div>
                             <div className="flex justify-center items-center gap-4"> {/* Reduced gap */}
-                                <button className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition-colors">Edit</button>
+                                <button className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition-colors"
+                                        onClick={() => configureUpdateProcess(project)}
+                                >Edit</button>
                                 <button className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md transition-colors">Details</button>
                                 <button className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md transition-colors">Remove</button>
                             </div>
@@ -132,75 +246,38 @@ export function ProjectPage() {
             </div>
             { isOpen &&
                 <div className='fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center flex-row p-4'>
-                    {/*<form action="" className=' bg-white  flex flex-row w-auto gap-x-2 p-4 rounded-xl '>
-                        <div className='flex flex-col gap-y-2 border border-gray-200 px-4 py-2'>
-                            <h1 className='text-xl text-gray-700 mb-4'>*Project</h1>
-                            <input className=' rounded-xl border p-3' type="text" placeholder="Project NO" required
-                                   onChange={() => {
-                                   }}/>
-                            <input className='rounded-xl border p-3' type="text" placeholder="Project Name"
-                                   onChange={() => {
-                                   }} required/>
 
-                            <input className='rounded-xl border p-3' type="number" min='0' placeholder="Location Name"
-                                   onChange={() => {
-                                   }} required/>
-                            <input className='rounded-xl border p-3' type="date" placeholder="start date"
-                                   onChange={() => {
-                                   }} required/>
-                            <input className='rounded-xl border p-3' type="date" placeholder="Location Name"
-                                   onChange={() => {
-                                   }} required/>
-
-                            <div className='flex flex-row justify-end gap-x-2.5 mt-5'>
-                                <button onClick={() => {
-                                }} className='rounded-xl w-1/2 bg-blue-600 p-2 text-white'>Save
-                                </button>
-                                <button onClick={() => setIsOpen(false)}
-                                        className={'bg-red-500  w-1/2 outline-none rounded-xl p-2 text-white'}>Close
-                                </button>
-                            </div>
-                        </div>
-                        <div className='bg-white  flex flex-col pt-2 pl-2 border '>
-
-                            {materials.map((material) => (
-                                <div className='flex flex-row justify-evenly gap-8'>
-                                    <div className={'bg-cyan-100'}>
-                                        <h1 className=''>{material.id}</h1>
-                                    </div>
-                                    <div className='bg-blue-600 flex flex-row pr-1'>
-                                        <input type="text" placeholder={'required Quantity'} className='border  rounded '/>
-                                        <input type="text" placeholder={'supplied Quantity'} className='border  rounded '/>
-                                    </div>
-                                    <div className={''}>
-                                        <label htmlFor="">{material.unit}</label>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </form>*/}
                     <form action="" className='bg-white flex flex-row w-auto gap-x-2 p-4 rounded-xl'>
                         <div className='flex flex-col gap-y-2 border border-gray-200 px-4 py-2'>
-                            <h1 className='text-xl text-gray-700 mb-4'>*Project</h1>
-                            <input className='rounded-xl border p-3' type="text" placeholder="Project NO" required
-                                   onChange={() => {
-                                   }}/>
+                            {isUpdate ?
+                                (<h1 className='text-xl text-gray-700 mb-4'>*Update Project</h1>)
+                                : (<h1 className='text-xl text-gray-700 mb-4'>*Add Project</h1>)
+                            }
+
+                            <input className='rounded-xl border p-3' type="text" placeholder="Project NO" required value={project_no}
+                                   onChange={(e) => handleInputChange(setProjectNo,'project_no',e.target.value)} />
+                            {errors.project_no && <span className="text-red-500">{errors.project_no}</span>}
+
                             <input className='rounded-xl border p-3' type="text" placeholder="Project Name"
-                                   onChange={() => {
-                                   }} required/>
-                            <input className='rounded-xl border p-3' type="number" min='0' placeholder="Location Name"
-                                   onChange={() => {
-                                   }} required/>
+                                   onChange={(e) => handleInputChange(setProjectName,'project_name',e.target.value)} required value={project_name}/>
+                            {errors.project_name && <span className="text-red-500">{errors.project_name}</span>}
+
+                            <input className='rounded-xl border p-3' type="text"  placeholder="Location Name"
+                                   onChange={(e) => handleInputChange(setProjectLocation,'location',e.target.value)} required value={location}/>
+                            {errors.location && <span className="text-red-500">{errors.location}</span>}
+
+
                             <input className='rounded-xl border p-3' type="date" placeholder="start date"
-                                   onChange={() => {
-                                   }} required/>
-                            <input className='rounded-xl border p-3' type="date" placeholder="Location Name"
-                                   onChange={() => {
-                                   }} required/>
+                                   onChange={(e) => handleInputChange(setProjectStartDate,'start_date',e.target.value)} required value={start_date}/>
+                            {errors.start_date && <span className="text-red-500">{errors.start_date}</span>}
+
+                            <input className='rounded-xl border p-3' type="date" placeholder="completion date"
+                                   onChange={(e) => handleInputChange(setCompletionDate,'completion_date',e.target.value)} required value={completion_date}/>
                             <div className='flex flex-row justify-end gap-x-2.5 mt-5'>
-                                <button onClick={() => {
-                                }} className='rounded-xl w-1/2 bg-blue-600 p-2 text-white'>Save
-                                </button>
+                                { isUpdate ?
+                                    (<button onClick={(e) => {handleUpdateProject(e)}} className='rounded-xl w-1/2 bg-blue-600 p-2 text-white'>Update</button>):
+                                    (<button onClick={(e) => {handleAddProject(e)}} className='rounded-xl w-1/2 bg-blue-600 p-2 text-white'>Save</button>)
+                                }
                                 <button onClick={() => setIsOpen(false)}
                                         className={'bg-red-500 w-1/2 outline-none rounded-xl p-2 text-white'}>Close
                                 </button>
@@ -208,17 +285,35 @@ export function ProjectPage() {
                         </div>
                         <div
                             className='reqpart bg-white flex flex-col pt-2 pl-2 border w-3/4 max-h-[400px] overflow-y-auto'> {/* Added max-h and overflow-y-auto */}
-                            {materials.map((material) => (
-                                <div key={material.id}
+                            {materials.map((material,index) => (
+                                <div key={material.material_id}
                                      className='flex flex-row items-center justify-between gap-4 p-2 border-b last:border-b-0'>
                                     <div className='bg-cyan-100 p-2 rounded-md'>
-                                        <h1 className='text-sm'>{material.id}</h1>
+                                        <h1 className='text-sm'>{material.material_id}</h1>
                                     </div>
                                     <div className='flex flex-row gap-2'>
-                                        <input type="text" placeholder={`Required ${material.name}`}
-                                               className='border rounded p-1 text-sm' />
-                                        <input type="text" placeholder={`Supplied ${material.name}`}
-                                               className='border rounded p-1 text-sm' value={'0'} />
+                                        {!isUpdate && (
+                                            <input type="number" min={'0'}
+                                                   placeholder={`Required ${material.material_name}`}
+                                                   className='border rounded p-1 text-sm'
+                                                   onChange={(e) => setvaluesForRequirements(e, material)}/>
+                                        )}
+                                        {isUpdate && (
+                                            <input type='number' min={0}
+                                                   placeholder={`Required ${material.material_name}`}
+                                                   value={relevantProjectMaterialReqirementList[index] && relevantProjectMaterialReqirementList[index].required_qty }
+                                                   className='border rounded p-1 text-sm'
+                                                   onChange={(e) => handleRequirementChange(e,index)}/>
+                                        )}
+
+                                        {isUpdate && (
+                                            <input type="number" min={0}
+                                                   value={relevantProjectMaterialReqirementList[index] && relevantProjectMaterialReqirementList[index].issue_qty}
+                                                   placeholder={`Supplied ${material.material_name}`}
+                                                   className='border rounded p-1 text-sm'/>
+                                        )}
+
+
                                     </div>
                                     <div className='text-sm'>
                                         <label>{material.unit}</label>

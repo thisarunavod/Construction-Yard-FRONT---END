@@ -6,10 +6,10 @@ import React from "react";
 import {HomePage} from "./pages/HomePage.tsx";
 import {RootLayout} from "./components/RootLayout.tsx";
 import {MaterialPage} from "./pages/MaterialPage.tsx";
-import {EmployeesPage} from "./pages/EmployeesPage.tsx";
+import {EmployeePage} from "./pages/EmployeesPage.tsx";
 import {MaterialReceivedDetailsPage} from "./pages/MaterialReceivedDetailsPage.tsx";
 import {ProjectPage} from "./pages/ProjectPage.tsx";
-import {TopMenuBar} from "./components/TopMenuBar.tsx";
+
 import {SuppliersPage} from "./pages/SuppliersPage.tsx";
 import {MaterialSendDetails} from "./pages/MaterialSendDetails.tsx";
 import {VehiclePage} from "./pages/VehiclePage.tsx";
@@ -39,7 +39,7 @@ function App() {
             children: [
                 {path:'/YardSystem', element:<HomePage/>},
                 {path:'Materials', element:<MaterialPage/>},
-                {path:'Employees', element:<EmployeesPage/>},
+                {path:'Employees', element:<EmployeePage/>},
                 {path:'Projects', element:<ProjectPage/>},
                 {path:'Suppliers', element:<SuppliersPage/>},
                 {path:'Vehicles', element:<VehiclePage/>},

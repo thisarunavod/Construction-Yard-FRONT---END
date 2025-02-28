@@ -1,44 +1,44 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import Axios from "axios";
-import Employee from "../model/employee.ts"; // Import the Employee model
+import MaterialReceivedDetails from "../model/materialReceivedDetails.ts";
 import { refreshToken } from "./userReducer.ts";
 
 const api = Axios.create({
     baseURL: "http://localhost:3000",
 });
 
-// Fetch all employees
-export const getAllEmployees = createAsyncThunk(
-    "employees/GetAllEmployees",
+// Fetch all material received details
+export const getAllMaterialReceivedDetails = createAsyncThunk(
+    "materialReceived/GetAllMaterialReceivedDetails",
     async () => {
         try {
             const token = localStorage.getItem('accessToken');
             if (!token) {
                 throw new Error("No authentication token found");
             }
-            const response = await api.get('/employee/getAllEmployees', {
+            const response = await api.get('/material/getAllMaterialReceivedDetails', {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
             return response.data;
         } catch (err) {
-            console.error("Failed to fetch employees:", err);
+            console.error("Failed to fetch material received details:", err);
             throw err;
         }
     }
 );
 
-// Add a new employee
-export const addEmployee = createAsyncThunk(
-    "employees/AddEmployee",
-    async (employee: Employee, { rejectWithValue }) => {
+// Add new material received details
+export const addMaterialReceivedDetails = createAsyncThunk(
+    "materialReceived/AddMaterialReceivedDetails",
+    async (details: MaterialReceivedDetails, { rejectWithValue }) => {
         try {
             const token = localStorage.getItem('accessToken');
             if (!token) {
                 throw new Error("No authentication token found");
             }
-            const response = await api.post('/employee/addEmployee', employee, {
+            const response = await api.post('/material/addMaterialReceivedDetails', details, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -49,7 +49,7 @@ export const addEmployee = createAsyncThunk(
                 try {
                     const newToken = await refreshToken();
                     if (newToken) {
-                        const retryResponse = await api.post('/employee/addEmployee', employee, {
+                        const retryResponse = await api.post('/material/addMaterialReceivedDetails', details, {
                             headers: {
                                 Authorization: `Bearer ${newToken}`,
                             },
@@ -66,78 +66,75 @@ export const addEmployee = createAsyncThunk(
     }
 );
 
-// Update an employee
-export const updateEmployee = createAsyncThunk(
-    "employees/UpdateEmployee",
-    async (employee: Employee) => {
+// Update material received details
+export const updateMaterialReceivedDetails = createAsyncThunk(
+    "materialReceived/UpdateMaterialReceivedDetails",
+    async (details: MaterialReceivedDetails) => {
         try {
             const token = localStorage.getItem('accessToken');
             if (!token) {
                 throw new Error("No authentication token found");
             }
-            const response = await api.put(`/employee/updateEmployee/${employee.e_id}`, employee, {
+            const response = await api.put(`/materialReceived/updateMaterialReceivedDetails/${details.received_id}`, details, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
             return response.data;
         } catch (err) {
-            console.error("Failed to update employee:", err);
+            console.error("Failed to update material received details:", err);
             throw err;
         }
     }
 );
 
-// Delete an employee
-export const deleteEmployee = createAsyncThunk(
-    "employees/DeleteEmployee",
-    async (eId: string) => {
+// Delete material received details
+export const deleteMaterialReceivedDetails = createAsyncThunk(
+    "materialReceived/DeleteMaterialReceivedDetails",
+    async (receivedId: string) => {
         try {
             const token = localStorage.getItem('accessToken');
             if (!token) {
                 throw new Error("No authentication token found");
             }
-            const response = await api.delete(`/employee/deleteEmployee/${eId}`, {
+            const response = await api.delete(`/materialReceived/deleteMaterialReceivedDetails/${receivedId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            return response.data; // Return the ID of the deleted employee
+            return receivedId; // Return the ID of the deleted details
         } catch (err) {
-            console.error("Failed to delete employee:", err);
+            console.error("Failed to delete material received details:", err);
             throw err;
         }
     }
 );
 
-const initialState: Employee[] = [];
+const initialState: MaterialReceivedDetails[] = [];
 
-const employeeSlice = createSlice({
-    name: 'employeeReducer',
+const materialReceivedSlice = createSlice({
+    name: 'materialReceivedReducer',
     initialState,
     reducers: {},
     extraReducers(builder) {
         builder
-            .addCase(getAllEmployees.fulfilled, (state, action) => {
-                return action.payload; // Replace the state with the fetched employees
+            .addCase(getAllMaterialReceivedDetails.fulfilled, (state, action) => {
+                return action.payload; // Replace the state with the fetched details
             })
-
-            .addCase(addEmployee.fulfilled, (state, action) => {
-                state.push(action.payload); // Add the new employee to the state
+            .addCase(addMaterialReceivedDetails.fulfilled, (state, action) => {
+                state.push(action.payload); // Add the new details to the state
             })
-
-            .addCase(updateEmployee.fulfilled, (state, action) => {
-                const updatedEmployee = action.payload;
-                const index = state.findIndex(e => e.e_id === updatedEmployee.e_id);
+            .addCase(updateMaterialReceivedDetails.fulfilled, (state, action) => {
+                const updatedDetails = action.payload;
+                const index = state.findIndex(d => d.received_id === updatedDetails.received_id);
                 if (index !== -1) {
-                    state[index] = updatedEmployee; // Update the employee in the state
+                    state[index] = updatedDetails; // Update the details in the state
                 }
             })
-
-            .addCase(deleteEmployee.fulfilled, (state, action) => {
-                return state.filter(e => e.e_id !== action.payload); // Remove the deleted employee
+            .addCase(deleteMaterialReceivedDetails.fulfilled, (state, action) => {
+                return state.filter(d => d.received_id !== action.payload); // Remove the deleted details
             });
     }
 });
 
-export default employeeSlice.reducer;
+export default materialReceivedSlice.reducer;
