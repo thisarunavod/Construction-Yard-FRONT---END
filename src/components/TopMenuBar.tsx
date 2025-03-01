@@ -17,7 +17,7 @@ export function TopMenuBar() {
         { name: "Employees", path: "/YardSystem/Employees" },
         { name: "Suppliers", path: "/YardSystem/Suppliers" },
         { name: "Material Received Details", path: "/YardSystem/MaterialReceivedDetails" },
-        { name: "Material Send Details", path: "/YardSystem/MaterialSendDetails" }
+        { name: "Material Send Details", path: "/YardSystem/MaterialSendDetailsPage" }
     ];
 
     return (

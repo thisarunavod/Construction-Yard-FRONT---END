@@ -9,9 +9,8 @@ import {MaterialPage} from "./pages/MaterialPage.tsx";
 import {EmployeePage} from "./pages/EmployeesPage.tsx";
 import {MaterialReceivedDetailsPage} from "./pages/MaterialReceivedDetailsPage.tsx";
 import {ProjectPage} from "./pages/ProjectPage.tsx";
-
 import {SuppliersPage} from "./pages/SuppliersPage.tsx";
-import {MaterialSendDetails} from "./pages/MaterialSendDetails.tsx";
+import {MaterialSendDetailsPage} from "./pages/MaterialSendDetailsPage.tsx";
 import {VehiclePage} from "./pages/VehiclePage.tsx";
 import {LoaderFunction} from "react-router-dom";
 
@@ -43,7 +42,7 @@ function App() {
                 {path:'Projects', element:<ProjectPage/>},
                 {path:'Suppliers', element:<SuppliersPage/>},
                 {path:'Vehicles', element:<VehiclePage/>},
-                {path:'MaterialSendDetails', element:<MaterialSendDetails/>},
+                {path:'MaterialSendDetails', element:<MaterialSendDetailsPage/>},
                 {path:'MaterialReceivedDetails', element:<MaterialReceivedDetailsPage/>},
             ],
         },

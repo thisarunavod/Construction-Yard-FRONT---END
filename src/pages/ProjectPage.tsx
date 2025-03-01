@@ -40,7 +40,7 @@ export function ProjectPage() {
     }, [materials]);
 
     useEffect(() => {
-        dispatch(getAllMaterials())
+        dispatch(getAllMaterials)
         dispatch(getALlProjects())
         dispatch(loadALlProjectsMaterialRequirements())
     }, []);
