@@ -2,9 +2,9 @@ export function HomePage() {
     return (
         <div className="bg-slate-100 min-h-screen">
             {/* Hero Section */}
-            <div className="bg-blue-600 text-white py-20">
+            <div className="bg-blue-400 text-white py-20">
                 <div className="container mx-auto text-center">
-                    <h1 className="text-5xl font-bold mb-4">Welcome to Our Application</h1>
+                    <h1 className="text-5xl font-bold mb-4">Welcome to YARD System</h1>
                     <p className="text-xl mb-8">
                         Manage your projects, materials, and suppliers efficiently with our powerful tools.
                     </p>
@@ -49,7 +49,7 @@ export function HomePage() {
             {/* Footer */}
             <footer className="bg-blue-600 text-white py-8">
                 <div className="container mx-auto text-center">
-                    <p className="mb-4">© 2023 Your Company. All rights reserved.</p>
+                    <p className="mb-4">© 2023 thisaru construction. All rights reserved.</p>
                     <div className="flex justify-center space-x-6">
                         <a href="#" className="hover:text-blue-200">Privacy Policy</a>
                         <a href="#" className="hover:text-blue-200">Terms of Service</a>

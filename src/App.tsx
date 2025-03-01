@@ -13,6 +13,7 @@ import {SuppliersPage} from "./pages/SuppliersPage.tsx";
 import {MaterialSendDetailsPage} from "./pages/MaterialSendDetailsPage.tsx";
 import {VehiclePage} from "./pages/VehiclePage.tsx";
 import {LoaderFunction} from "react-router-dom";
+import {UsersPage} from "./pages/UserManagePage.tsx";
 
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
                 {path:'Projects', element:<ProjectPage/>},
                 {path:'Suppliers', element:<SuppliersPage/>},
                 {path:'Vehicles', element:<VehiclePage/>},
+                {path:'Users', element:<UsersPage/>},
                 {path:'MaterialSendDetails', element:<MaterialSendDetailsPage/>},
                 {path:'MaterialReceivedDetails', element:<MaterialReceivedDetailsPage/>},
             ],

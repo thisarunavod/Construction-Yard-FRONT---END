@@ -8,10 +8,12 @@ import {
     updateMaterial,
 } from "../reducers/materialReducer.ts";
 import Material from "../model/Material.ts";
+import {jwtDecode} from "jwt-decode";
+import {useNavigate} from "react-router";
 
 export function MaterialPage() {
     const materials = useSelector((state: RootState) => state.material);
-
+    const navigate = useNavigate();
     const dispatch = useDispatch<AppDispatch>();
     const [materialId, setMaterialId] = useState('');
     const [materialName, setMaterialName] = useState('');
@@ -23,12 +25,14 @@ export function MaterialPage() {
     const [isUpdate, setIsUpdate] = useState(false);
     const [relevantMaterials, setRelevantMaterials] = useState(materials);
 
+
     useEffect(() => {
         setRelevantMaterials(materials);
     }, [materials]);
 
     useEffect(() => {
-        dispatch(getAllMaterials())
+        const accessToken = localStorage.getItem('accessToken');
+        accessToken ? dispatch(getAllMaterials()):navigate('/')
     }, []);
 
     const [errors, setErrors] = useState({

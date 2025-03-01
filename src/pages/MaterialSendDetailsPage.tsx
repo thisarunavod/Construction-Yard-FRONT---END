@@ -14,6 +14,7 @@ import MaterialSendDetails from "../model/materialSendDetails.ts"; // Import the
 import Material from "../model/Material.ts";
 import Project from "../model/project.ts";
 import Vehicle from "../model/vehicle.ts";
+import {useNavigate} from "react-router";
 
 export function MaterialSendDetailsPage() {
     const materialSendDetails: MaterialSendDetails[] = useSelector((state: RootState) => state.materialSend);
@@ -28,7 +29,7 @@ export function MaterialSendDetailsPage() {
     const [issueQty, setIssueQty] = useState(0);
     const [vId, setVId] = useState('');
     const [issueDate, setIssueDate] = useState('');
-
+    const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
     const [relevantDetails, setRelevantDetails] = useState(materialSendDetails);
@@ -38,12 +39,16 @@ export function MaterialSendDetailsPage() {
     }, [materialSendDetails]);
 
     useEffect(() => {
-        dispatch(getAllMaterialSendDetails());
-        dispatch(getAllMaterials());
-        dispatch(getALlProjects());
-        dispatch(getAllVehicles());
+        const accessToken = localStorage.getItem('accessToken');
+        if (accessToken){
+            dispatch(getAllMaterialSendDetails());
+            dispatch(getAllMaterials())
+            dispatch(getALlProjects())
+            dispatch(getAllVehicles())
+        }else {
+            navigate('/')
+        }
 
-        console.log(projectDetails.projects.length);
     }, []);
 
     const [errors, setErrors] = useState({

@@ -12,11 +12,14 @@ import { getAllMaterials } from "../reducers/materialReducer.ts";
 import MaterialReceivedDetails from "../model/materialReceivedDetails.ts";
 import Supplier from "../model/supplier.ts";
 import Material from "../model/Material.ts";
+import {jwtDecode} from "jwt-decode";
+import {useNavigate} from "react-router";
 
 export function MaterialReceivedDetailsPage() {
     const materialReceivedDetails: MaterialReceivedDetails[] = useSelector((state: RootState) => state.materialReceived);
     const suppliers: Supplier[] = useSelector((state: RootState) => state.supplier);
     const materials: Material[] = useSelector((state: RootState) => state.material);
+
 
     const dispatch = useDispatch<AppDispatch>();
     const [receivedId, setReceivedId] = useState('');
@@ -27,10 +30,19 @@ export function MaterialReceivedDetailsPage() {
     const [receivedQty, setReceivedQty] = useState(0);
     const [unit, setUnit] = useState('');
     const [receivedDate, setReceivedDate] = useState('');
-
+    const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
     const [relevantDetails, setRelevantDetails] = useState(materialReceivedDetails);
+
+    useEffect(() => {
+        const accessToken = localStorage.getItem('accessToken');
+        if (accessToken) {
+            const { role } = jwtDecode(accessToken);
+            console.log(role)
+            if (role == 'Admin'){ navigate('/')}
+        }else{navigate('/')}
+    }, []);
 
     useEffect(() => {
         setRelevantDetails(materialReceivedDetails);

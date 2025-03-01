@@ -49,10 +49,10 @@ export function LoginPage() {
                                 type='password'
                                 placeholder='Enter Your Password'
                                 onChange={(e) => setPassword(e.target.value)}
-                                // required
+                                required
                             />
                         </div>
-                        <div className='mt-8 flex justify-between'>
+                        {/*<div className='mt-8 flex justify-between'>
                             <div className={''}>
                                 <input type="checkbox"/>
                                 <label className='mt-2 font-medium  text-base'>Remember for 30 days</label>
@@ -60,7 +60,7 @@ export function LoginPage() {
                             <button className='font-medium text-base text-blue-500'>
                                 Forgot password
                             </button>
-                        </div>
+                        </div>*/}
                         <div className='mt-6 flex flex-col gap-y-3'>
                             <button
                                 type={'button'}

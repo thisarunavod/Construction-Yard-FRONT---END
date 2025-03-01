@@ -3,16 +3,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store/store.ts";
 import { addSupplier, deleteSupplier, getAllSuppliers, updateSupplier } from "../reducers/supplierReducer.ts";
 import Supplier from "../model/supplier.ts";
-import {deleteMaterial} from "../reducers/materialReducer.ts";
+import {deleteMaterial, getAllMaterials} from "../reducers/materialReducer.ts";
+import {useNavigate} from "react-router";
 
 export function SuppliersPage() {
     const suppliers = useSelector((state: RootState) => state.supplier);
 
     const dispatch = useDispatch<AppDispatch>();
+    const navigate = useNavigate();
     const [supId, setSupId] = useState('');
     const [companyName, setCompanyName] = useState('');
     const [companyEmail, setCompanyEmail] = useState('');
-
     const [isOpen, setIsOpen] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
     const [relevantSuppliers, setRelevantSuppliers] = useState(suppliers);
@@ -22,7 +23,8 @@ export function SuppliersPage() {
     }, [suppliers]);
 
     useEffect(() => {
-        dispatch(getAllSuppliers());
+        const accessToken = localStorage.getItem('accessToken');
+        accessToken ? dispatch(getAllSuppliers()):navigate('/')
     }, []);
 
     const [errors, setErrors] = useState({

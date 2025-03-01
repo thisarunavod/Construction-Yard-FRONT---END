@@ -2,17 +2,87 @@ import {asyncThunkCreator, createAsyncThunk, createSlice, PayloadAction} from "@
 import Axios, {AxiosError, AxiosHeaders} from "axios";
 import jwt, {decode, JwtPayload} from "jsonwebtoken";
 import {jwtDecode} from 'jwt-decode'
+import User from "../model/user.ts";
 
 
-export const initialState = {
+export const initialState:any = {
     securityTokens: null,
-    decodedToken: null, // Add a state to store the decoded token
+    decodedToken: null,
+    users:[]
 }
 
 const api = Axios.create({
     baseURL: "http://localhost:3000",
 })
+export const addUser = createAsyncThunk(
+    "user/addUser",
+    async(user:User)=>{
+        try {
+            const token = localStorage.getItem('accessToken');
+            if (!token) {
+                throw new Error("No authentication token found");
+            }
+            const response = await api.post('/auth/register',user,{
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            return response.data;
+        }catch (err){
+            alert(err)
+        }
+    }
+)
+export const getAllUsers = createAsyncThunk(
+    "user/getAllUsers",
+    async()=>{
+        try {
+            const token = localStorage.getItem('accessToken');
+            if (!token) {
+                throw new Error("No authentication token found");
+            }
+            const response = await api.get('/user/getAllUsers',{
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            return response.data;
+        }catch (err){
 
+        }
+    }
+)
+
+export const deleteUser = createAsyncThunk(
+    "user/deleteUser",
+    async(id:string)=>{
+        console.log(id)
+        try {
+            const token = localStorage.getItem('accessToken');
+            if (!token) {
+                throw new Error("No authentication token found");
+            }
+            const response = await api.delete(`/user/deleteUser/${id}`,{
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            return response.data;
+        }catch (err){
+
+        }
+    }
+)
+export const updateUser = createAsyncThunk(
+    "user/updateUser",
+    async(user:User)=>{
+        try {
+
+        }catch (err){
+
+        }
+    }
+)
 
 export const loginUser = createAsyncThunk(
     'user/login',
@@ -29,6 +99,7 @@ export const loginUser = createAsyncThunk(
         }
     }
 )
+
 export const refreshToken = async () => {
 
     try {
@@ -70,15 +141,23 @@ const userSlice = createSlice({
                 state.securityTokens = action.payload
                 localStorage.setItem('accessToken',action.payload.accessToken)
                 localStorage.setItem('refreshToken',action.payload.refreshToken)
-
-                // const user = jwtDecode(action.payload.accessToken)
-                // console.log(localStorage.getItem('token'))
-
             })
             .addCase(loginUser.rejected, (state, action) => {
-                // console.log('login  Error');
                 alert('login  Error')
                 console.log(action.payload)
+            })
+
+            .addCase(getAllUsers.fulfilled, (state, action) => {
+                console.log(action.payload)
+                state.users = action.payload
+            })
+            .addCase(addUser.fulfilled, (state, action) => {
+                console.log(action.payload)
+                state.users.push(action.payload)
+            })
+
+            .addCase(deleteUser.fulfilled, (state, action) => {
+                return state.users.filter(u => u.id !== action.payload);
             })
     }
 
