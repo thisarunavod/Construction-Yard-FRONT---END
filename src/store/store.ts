@@ -5,6 +5,7 @@ import supplierReducer from "../reducers/supplierReducer.ts";
 import materialReceivedDetailsReducer from "../reducers/materialReceivedDetailsReducer.ts";
 import projectReducer from "../reducers/projectReducer.ts";
 import employeeReducer from "../reducers/employeeReducer.ts";
+import vehicleReducer from "../reducers/vehicleReducer.ts";
 
 
 export const store = configureStore({
@@ -15,6 +16,7 @@ export const store = configureStore({
         materialReceived:materialReceivedDetailsReducer,
         project: projectReducer,
         employee: employeeReducer,
+        vehicle:vehicleReducer,
     }
 })
 

@@ -7,6 +7,7 @@ import MaterialRequirement from "../model/materialRequirement.ts";
 import Project from "../model/project.ts";
 import ProjectDetails from "../model/projectDetails.ts";
 import {requestFormReset} from "react-dom";
+import {getAllMaterials} from "../reducers/materialReducer.ts";
 
 export function ProjectPage() {
 
@@ -39,6 +40,7 @@ export function ProjectPage() {
     }, [materials]);
 
     useEffect(() => {
+        dispatch(getAllMaterials())
         dispatch(getALlProjects())
         dispatch(loadALlProjectsMaterialRequirements())
     }, []);

@@ -123,19 +123,19 @@ const supplierSlice = createSlice({
             })
 
             .addCase(addSupplier.fulfilled, (state, action) => {
-                state.push(action.payload); // Add the new supplier to the state
+                state.push(action.payload);
             })
 
             .addCase(updateSupplier.fulfilled, (state, action) => {
                 const updatedSupplier = action.payload;
                 const index = state.findIndex(s => s.sup_id === updatedSupplier.sup_id);
                 if (index !== -1) {
-                    state[index] = updatedSupplier; // Update the supplier in the state
+                    state[index] = updatedSupplier;
                 }
             })
 
             .addCase(deleteSupplier.fulfilled, (state, action) => {
-                return state.filter(s => s.sup_id !== action.payload); // Remove the deleted supplier
+                return state.filter(s => s.sup_id !== action.payload);
             });
     }
 });
